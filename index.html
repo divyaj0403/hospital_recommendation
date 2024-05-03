@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Recommendation System</title>
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #illnessForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 300px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #9e54db;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #recommendation {
+            margin-top: 20px;
+        }
+
+        #recommendation p {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        #recommendation strong {
+            color: #9e54db;
+        }
+ /* Style for select boxes */
+select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Style for select box on focus */
+select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Know Your Hospital:</h1>
+        <form id="recommendationForm" action="/recommendation" method="GET"> <!-- Updated form action -->
+            <label for="location">Select your location:</label><br><br>
+            <select id="location" name="location" required>
+                <option value="" disabled selected>Select your location</option>
+                <option value="Choose">Choose</option>
+                <option value="Vasai">Vasai</option>
+                <option value="Dombivli">Dombivli</option>
+                <!-- Add more options as needed -->
+            </select>
+            <br><br>
+            <label for="illness">Select your illness:</label><br><br>
+            
+            <select id="illness" name="illness" required>
+                
+                <option value="" disabled selected>Select your illness</option>
+                <option value="Choose">Choose</option>
+                <option value="Heart">Heart Disease</option>
+                <option value="kidney">Kidney Stone/UTI</option>
+                <option value="spine surgery">Spine Surgery/Problems</option>
+                <option value="oral surgery">Dental/root implant</option>
+                <option value="Diabetes Management">Diabetes/BP</option>
+                <option value="Thyroid Disorders">Thyroid Disorders</option>
+                <option value="Women's Wellness">Women's Wellness</option>
+                <option value="Cancer">Cancer/Chemotherapy</option>
+                <option value="Dermatology">Skin issues</option>
+                <option value="liver">Liver</option>
+               
+
+                <!-- Add more options as needed -->
+            </select>
+            <br><br>
+            <button type="submit">Submit</button>
+
+        </form>
+    </div>
+
+    <div id="recommendation"></div>
+
+    <script>
+        document.getElementById("recommendationForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            fetchRecommendation(formData.get("location"), formData.get("illness"));
+        });
+
+        function fetchRecommendation(location, illness) {
+            fetch("/recommendation?location=" + encodeURIComponent(location) + "&illness=" + encodeURIComponent(illness))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.getElementById("recommendation").innerHTML = "<p>" + data.error + "</p>";
+                    } else {
+                        document.getElementById("recommendation").innerHTML = "<p>Recommended Hospital: <strong>" + data.Hospital + "</strong> (" + data.Location + ")</p>"; // Updated to match the keys returned by Flask
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+        }
+    </script>
+</body>
+</html>
